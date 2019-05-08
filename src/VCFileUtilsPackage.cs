@@ -3,18 +3,21 @@ using VCFileUtils.Integration;
 using VCFileUtils.Integration.Commands;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+using System.Threading;
+using System.Threading.Tasks;
 using System;
 using System.ComponentModel.Design;
 using System.Runtime.InteropServices;
+using Microsoft.VisualStudio;
 
 namespace VCFileUtils
 {
-    [PackageRegistration(UseManagedResourcesOnly = true)]
+    [PackageRegistration(UseManagedResourcesOnly = true, AllowsBackgroundLoading = true)]
     [InstalledProductRegistration("#110", "#112", "1.0", IconResourceID = 400)]
-    [ProvideAutoLoad(UIContextGuids80.SolutionExists)]
+    [ProvideAutoLoad(VSConstants.UICONTEXT.SolutionExistsAndFullyLoaded_string, PackageAutoLoadFlags.BackgroundLoad)]
     [ProvideMenuResource(1000, 1)]
     [Guid(GuidList.GuidPackageString)]
-    public sealed class VCFileUtilsPackage : Package
+    public sealed class VCFileUtilsPackage : AsyncPackage
     {
         #region Fields
 
@@ -57,12 +60,18 @@ namespace VCFileUtils
 
         #region Package Members
 
-        protected override void Initialize()
+        /*protected override void Initialize()
         {
             base.Initialize();
 
             RegisterCommands();
+        }*/
+
+        protected override async System.Threading.Tasks.Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
+        {
+            RegisterCommands();
         }
+
 
         #endregion
 
